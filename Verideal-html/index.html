@@ -1,0 +1,991 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Auth Portal</title>
+    <style>
+        :root {
+            --primary-color: #3498db;
+            --secondary-color: #2980b9;
+            --accent-color: #00c9ff;
+            --baby-blue: #d6e9ff;
+            --light-gray: #f5f7fa;
+            --medium-gray: #e0e5ec;
+            --dark-gray: #7f8c8d;
+            --text-color: #2c3e50;
+            --white: #ffffff;
+            --shadow: 0 8px 24px rgba(0, 0, 0, 0.12);
+            --transition: all 0.4s cubic-bezier(0.25, 0.8, 0.25, 1);
+            --success-color: #2ecc71;
+            --error-color: #e74c3c;
+            --login-bg: #0f69a4;
+            --signup-bg: #063571;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        body {
+            background-color: var(--login-bg);
+            color: var(--text-color);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            transition: background-color 0.6s ease;
+        }
+
+        body.signup-active {
+            background-color: var(--signup-bg);
+        }
+
+        .container {
+            width: 100%;
+            max-width: 600px;
+            padding: 1.5rem;
+        }
+
+        .auth-container {
+            background-color: var(--white);
+            border-radius: 16px;
+            box-shadow: var(--shadow);
+            overflow: hidden;
+            transition: all 0.6s cubic-bezier(0.68, -0.55, 0.265, 1.55);
+            transform: translateY(0) scale(1);
+            width: 100%;
+            position: relative;
+        }
+
+        .auth-container.signup-active {
+            transform: translateY(0) scale(1.02);
+            max-width: 620px;
+        }
+
+        .tabs {
+            display: flex;
+            background-color: var(--baby-blue);
+        }
+
+        .tab {
+            flex: 1;
+            padding: 1rem;
+            text-align: center;
+            cursor: pointer;
+            background-color: var(--baby-blue);
+            color: var(--dark-gray);
+            font-weight: 600;
+            transition: var(--transition);
+            position: relative;
+        }
+
+        .tab.active {
+            color: var(--primary-color);
+            background-color: var(--white);
+        }
+
+        .tab.active::after {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            width: 100%;
+            height: 3px;
+            background: linear-gradient(90deg, var(--primary-color), var(--accent-color));
+        }
+
+        .tab:first-child {
+            border-right: 1px solid rgba(0, 0, 0, 0.05);
+        }
+
+        .form-container {
+            padding: 2rem;
+        }
+
+        .form {
+            display: none;
+            opacity: 0;
+            transform: translateY(10px);
+            transition: opacity 0.5s ease, transform 0.5s ease;
+        }
+
+        .form.active {
+            display: block;
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        .form-title {
+            margin-bottom: 1.5rem;
+            text-align: center;
+            color: var(--text-color);
+            font-weight: 600;
+            font-size: 1.4rem;
+        }
+
+        .input-group {
+            margin-bottom: 1.2rem;
+            position: relative;
+            width: 100%;
+        }
+
+        .input-group label {
+            display: block;
+            margin-bottom: 0.6rem;
+            font-weight: 500;
+            color: var(--dark-gray);
+            transition: var(--transition);
+        }
+
+        .input-group input {
+            width: 100%;
+            padding: 0.9rem 1.1rem;
+            border: 2px solid var(--medium-gray);
+            border-radius: 8px;
+            font-size: 0.95rem;
+            transition: var(--transition);
+            background-color: var(--light-gray);
+        }
+
+        .input-group input:focus {
+            border-color: var(--primary-color);
+            outline: none;
+            box-shadow: 0 0 0 4px rgba(52, 152, 219, 0.15);
+            background-color: var(--white);
+        }
+
+        .form-row {
+            display: flex;
+            gap: 1.2rem;
+            margin-bottom: 1.2rem;
+            width: 100%;
+        }
+
+        .form-col {
+            flex: 1;
+            min-width: 0;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .full-width-field {
+            width: 100%;
+            margin-bottom: 1.2rem;
+        }
+
+        .checkbox-group {
+            margin: 1.2rem 0;
+            display: flex;
+            align-items: center;
+        }
+
+        .checkbox-group input {
+            margin-right: 0.8rem;
+            width: 1.1rem;
+            height: 1.1rem;
+            cursor: pointer;
+        }
+
+        .checkbox-group label {
+            font-size: 0.85rem;
+            color: var(--dark-gray);
+        }
+
+        .checkbox-group a {
+            color: var(--primary-color);
+            text-decoration: none;
+            font-weight: 500;
+        }
+
+        .checkbox-group a:hover {
+            text-decoration: underline;
+        }
+
+        .btn {
+            width: 100%;
+            padding: 1rem;
+            border: none;
+            border-radius: 8px;
+            background: linear-gradient(135deg, var(--primary-color), var(--accent-color));
+            color: var(--white);
+            font-size: 1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: var(--transition);
+            box-shadow: 0 4px 12px rgba(52, 152, 219, 0.25);
+        }
+
+        .btn:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 6px 16px rgba(52, 152, 219, 0.35);
+        }
+
+        .btn:active {
+            transform: translateY(0);
+        }
+
+        .btn:disabled {
+            background: var(--medium-gray);
+            cursor: not-allowed;
+            transform: none;
+            box-shadow: none;
+        }
+
+        .forgot-password {
+            display: block;
+            text-align: right;
+            margin-top: 0.5rem;
+            margin-bottom: 1.5rem;
+            color: var(--dark-gray);
+            font-size: 0.85rem;
+            text-decoration: none;
+            transition: var(--transition);
+        }
+
+        .forgot-password:hover {
+            color: var(--primary-color);
+            text-decoration: underline;
+        }
+
+        .divider {
+            display: flex;
+            align-items: center;
+            margin: 1.5rem 0;
+            color: var(--dark-gray);
+            font-size: 0.85rem;
+        }
+
+        .divider::before, .divider::after {
+            content: "";
+            flex: 1;
+            border-bottom: 1px solid var(--medium-gray);
+        }
+
+        .divider::before {
+            margin-right: 1rem;
+        }
+
+        .divider::after {
+            margin-left: 1rem;
+        }
+
+        .social-login {
+            display: flex;
+            justify-content: center;
+            gap: 1.2rem;
+            margin-bottom: 1.5rem;
+        }
+
+        .social-btn {
+            width: 42px;
+            height: 42px;
+            border-radius: 50%;
+            background-color: transparent;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            cursor: pointer;
+            transition: var(--transition);
+        }
+
+        .social-btn:hover {
+            transform: translateY(-3px);
+        }
+
+        .social-btn i {
+            font-size: 1.4rem;
+            color: var(--text-color);
+            transition: var(--transition);
+        }
+
+        .social-btn:hover i {
+            color: var(--primary-color);
+        }
+
+        .toggle-form {
+            text-align: center;
+            margin-top: 1.5rem;
+            color: var(--dark-gray);
+            font-size: 0.9rem;
+        }
+
+        .toggle-form a {
+            color: var(--primary-color);
+            text-decoration: none;
+            font-weight: 600;
+            transition: var(--transition);
+        }
+
+        .toggle-form a:hover {
+            color: var(--secondary-color);
+            text-decoration: underline;
+        }
+
+        .reset-form {
+            display: none;
+            opacity: 0;
+            transform: translateY(10px);
+            transition: opacity 0.5s ease, transform 0.5s ease;
+        }
+
+        .reset-form.active {
+            display: block;
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        .back-to-login {
+            display: block;
+            text-align: center;
+            margin-top: 1rem;
+            color: var(--dark-gray);
+            font-size: 0.9rem;
+            text-decoration: none;
+            transition: var(--transition);
+        }
+
+        .back-to-login:hover {
+            color: var(--primary-color);
+            text-decoration: underline;
+        }
+
+        .notification {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            padding: 15px 25px;
+            border-radius: 8px;
+            color: white;
+            font-weight: 500;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+            transform: translateX(150%);
+            transition: transform 0.4s cubic-bezier(0.68, -0.55, 0.265, 1.55);
+            z-index: 1000;
+            display: flex;
+            align-items: center;
+            max-width: 90%;
+        }
+
+        .notification.success {
+            background-color: var(--success-color);
+        }
+
+        .notification.error {
+            background-color: var(--error-color);
+        }
+
+        .notification.show {
+            transform: translateX(0);
+        }
+
+        .notification i {
+            margin-right: 10px;
+            font-size: 1.2rem;
+        }
+
+        .phone-input-container {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            width: 100%;
+        }
+
+        .country-selector {
+            position: relative;
+            flex: 0 0 auto;
+        }
+
+        .country-selector-btn {
+            display: flex;
+            align-items: center;
+            padding: 0.6rem 0.8rem;
+            border: 2px solid var(--medium-gray);
+            border-radius: 8px;
+            background-color: var(--light-gray);
+            cursor: pointer;
+            transition: var(--transition);
+            height: 48px;
+            min-width: 80px;
+        }
+
+        .country-selector-btn:hover {
+            border-color: var(--primary-color);
+        }
+
+        .country-flag {
+            width: 20px;
+            height: 15px;
+            margin-right: 6px;
+            background-size: cover;
+            background-position: center;
+        }
+
+        .country-code {
+            font-weight: 500;
+            font-size: 0.9rem;
+        }
+
+        .country-dropdown {
+            position: absolute;
+            top: 100%;
+            left: 0;
+            width: 250px;
+            max-height: 300px;
+            overflow-y: auto;
+            background-color: var(--white);
+            border: 1px solid var(--medium-gray);
+            border-radius: 8px;
+            box-shadow: var(--shadow);
+            z-index: 100;
+            display: none;
+        }
+
+        .country-dropdown.show {
+            display: block;
+        }
+
+        .country-item {
+            display: flex;
+            align-items: center;
+            padding: 8px 12px;
+            cursor: pointer;
+            transition: var(--transition);
+        }
+
+        .country-item:hover {
+            background-color: var(--baby-blue);
+        }
+
+        .country-item-flag {
+            width: 20px;
+            height: 15px;
+            margin-right: 10px;
+            background-size: cover;
+            background-position: center;
+        }
+
+        .country-item-name {
+            flex: 1;
+            font-size: 0.9rem;
+        }
+
+        .country-item-code {
+            color: var(--dark-gray);
+            font-size: 0.85rem;
+        }
+
+        .phone-input {
+            flex: 1;
+        }
+
+        .phone-input input {
+            width: 100%;
+            padding: 0.9rem 1.1rem;
+            border: 2px solid var(--medium-gray);
+            border-radius: 8px;
+            font-size: 0.95rem;
+            transition: var(--transition);
+            background-color: var(--light-gray);
+            height: 48px;
+        }
+
+        .phone-input input:focus {
+            border-color: var(--primary-color);
+            outline: none;
+            box-shadow: 0 0 0 4px rgba(52, 152, 219, 0.15);
+            background-color: var(--white);
+        }
+
+        @media (max-width: 750px) {
+            .auth-container.signup-active {
+                transform: translateY(0) scale(1);
+                max-width: 600px;
+            }
+        }
+
+        @media (max-width: 600px) {
+            .container {
+                padding: 1rem;
+                max-width: 100%;
+            }
+            
+            .form-container {
+                padding: 1.5rem;
+            }
+
+            .form-row {
+                flex-direction: column;
+                gap: 1rem;
+            }
+            
+            .input-group {
+                margin-bottom: 1.2rem;
+            }
+
+            .notification {
+                top: 10px;
+                right: 10px;
+                padding: 12px 20px;
+                font-size: 0.9rem;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .container {
+                padding: 0.8rem;
+            }
+            
+            .form-container {
+                padding: 1.2rem;
+            }
+            
+            .tab {
+                padding: 0.8rem;
+                font-size: 0.95rem;
+            }
+            
+            .form-title {
+                font-size: 1.2rem;
+            }
+            
+            .social-login {
+                gap: 1rem;
+            }
+
+            .country-selector-btn {
+                padding: 0.5rem 0.6rem;
+                min-width: 70px;
+            }
+
+            .country-code {
+                font-size: 0.8rem;
+            }
+        }
+    </style>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+</head>
+<body>
+    <div class="container">
+        <div class="auth-container" id="auth-container">
+            <div class="tabs">
+                <div class="tab active" id="login-tab" onclick="switchTab('login')">Login</div>
+                <div class="tab" id="signup-tab" onclick="switchTab('signup')">Sign Up</div>
+            </div>
+            
+            <div class="form-container">
+                <div class="form active" id="login-form">
+                    <h2 class="form-title">Welcome Back</h2>
+                    
+                    <div class="input-group">
+                        <label for="login-email">Email</label>
+                        <input type="email" id="login-email" placeholder="Enter your email">
+                    </div>
+                    
+                    <div class="input-group">
+                        <label for="login-password">Password</label>
+                        <input type="password" id="login-password" placeholder="Enter your password">
+                        <a href="#" class="forgot-password" onclick="showResetForm()">Forgot password?</a>
+                    </div>
+                    
+                    <button class="btn" onclick="login()">Login</button>
+                    
+                    <div class="divider">or</div>
+                    
+                    <div class="social-login">
+                        <a href="https://accounts.google.com" class="social-btn" target="_blank">
+                            <i class="fab fa-google"></i>
+                        </a>
+                        <a href="https://www.linkedin.com" class="social-btn" target="_blank">
+                            <i class="fab fa-linkedin-in"></i>
+                        </a>
+                        <a href="https://appleid.apple.com" class="social-btn" target="_blank">
+                            <i class="fab fa-apple"></i>
+                        </a>
+                        <a href="https://github.com" class="social-btn" target="_blank">
+                            <i class="fab fa-github"></i>
+                        </a>
+                    </div>
+                    
+                    <p class="toggle-form">Don't have an account? <a href="#" onclick="switchTab('signup')">Sign up</a></p>
+                </div>
+                
+                <div class="reset-form" id="reset-form">
+                    <h2 class="form-title">Reset Password</h2>
+                    
+                    <div class="input-group">
+                        <label for="reset-email">Email</label>
+                        <input type="email" id="reset-email" placeholder="Enter your email">
+                    </div>
+                    
+                    <button class="btn" onclick="sendResetLink()">Send Reset Link</button>
+                    
+                    <a href="#" class="back-to-login" onclick="hideResetForm()">Back to Login</a>
+                </div>
+                
+                <div class="form" id="signup-form">
+                    <h2 class="form-title">Welcome! join us and fill the details</h2>
+                    
+                    <div class="form-row">
+                        <div class="form-col">
+                            <div class="input-group">
+                                <label for="signup-name">Full Name</label>
+                                <input type="text" id="signup-name" placeholder="Enter your full name">
+                            </div>
+                        </div>
+                        <div class="form-col">
+                            <div class="input-group">
+                                <label for="signup-email">Email</label>
+                                <input type="email" id="signup-email" placeholder="Enter your email">
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="input-group">
+                        <label for="signup-username">Username</label>
+                        <input type="text" id="signup-username" placeholder="Choose a username">
+                    </div>
+
+                    <div class="input-group">
+                        <label>Phone Number</label>
+                        <div class="phone-input-container">
+                            <div class="country-selector">
+                                <div class="country-selector-btn" id="country-selector-btn">
+                                    <div class="country-flag" id="selected-flag" style="background-image: url('https://flagcdn.com/w20/us.png')"></div>
+                                    <span class="country-code" id="selected-code">+1</span>
+                                    <i class="fas fa-chevron-down" style="margin-left: 4px; font-size: 12px;"></i>
+                                </div>
+                                <div class="country-dropdown" id="country-dropdown">
+                                    <div class="country-item" data-code="+1" data-country="United States" data-flag="https://flagcdn.com/w20/us.png">
+                                        <div class="country-item-flag" style="background-image: url('https://flagcdn.com/w20/us.png')"></div>
+                                        <span class="country-item-name">United States</span>
+                                        <span class="country-item-code">+1</span>
+                                    </div>
+                                    <div class="country-item" data-code="+44" data-country="United Kingdom" data-flag="https://flagcdn.com/w20/gb.png">
+                                        <div class="country-item-flag" style="background-image: url('https://flagcdn.com/w20/gb.png')"></div>
+                                        <span class="country-item-name">United Kingdom</span>
+                                        <span class="country-item-code">+44</span>
+                                    </div>
+                                    <div class="country-item" data-code="+963" data-country="Syria" data-flag="https://flagcdn.com/w20/sy.png">
+                                        <div class="country-item-flag" style="background-image: url('https://flagcdn.com/w20/sy.png')"></div>
+                                        <span class="country-item-name">Syria</span>
+                                        <span class="country-item-code">+963</span>
+                                    </div>
+                                    <div class="country-item" data-code="+91" data-country="India" data-flag="https://flagcdn.com/w20/in.png">
+                                        <div class="country-item-flag" style="background-image: url('https://flagcdn.com/w20/in.png')"></div>
+                                        <span class="country-item-name">India</span>
+                                        <span class="country-item-code">+91</span>
+                                    </div>
+                                    <div class="country-item" data-code="+86" data-country="China" data-flag="https://flagcdn.com/w20/cn.png">
+                                        <div class="country-item-flag" style="background-image: url('https://flagcdn.com/w20/cn.png')"></div>
+                                        <span class="country-item-name">China</span>
+                                        <span class="country-item-code">+86</span>
+                                    </div>
+                                    <div class="country-item" data-code="+81" data-country="Japan" data-flag="https://flagcdn.com/w20/jp.png">
+                                        <div class="country-item-flag" style="background-image: url('https://flagcdn.com/w20/jp.png')"></div>
+                                        <span class="country-item-name">Japan</span>
+                                        <span class="country-item-code">+81</span>
+                                    </div>
+                                    <div class="country-item" data-code="+49" data-country="Germany" data-flag="https://flagcdn.com/w20/de.png">
+                                        <div class="country-item-flag" style="background-image: url('https://flagcdn.com/w20/de.png')"></div>
+                                        <span class="country-item-name">Germany</span>
+                                        <span class="country-item-code">+49</span>
+                                    </div>
+                                    <div class="country-item" data-code="+33" data-country="France" data-flag="https://flagcdn.com/w20/fr.png">
+                                        <div class="country-item-flag" style="background-image: url('https://flagcdn.com/w20/fr.png')"></div>
+                                        <span class="country-item-name">France</span>
+                                        <span class="country-item-code">+33</span>
+                                    </div>
+                                    <div class="country-item" data-code="+7" data-country="Russia" data-flag="https://flagcdn.com/w20/ru.png">
+                                        <div class="country-item-flag" style="background-image: url('https://flagcdn.com/w20/ru.png')"></div>
+                                        <span class="country-item-name">Russia</span>
+                                        <span class="country-item-code">+7</span>
+                                    </div>
+                                    <div class="country-item" data-code="+55" data-country="Brazil" data-flag="https://flagcdn.com/w20/br.png">
+                                        <div class="country-item-flag" style="background-image: url('https://flagcdn.com/w20/br.png')"></div>
+                                        <span class="country-item-name">Brazil</span>
+                                        <span class="country-item-code">+55</span>
+                                    </div>
+                                    <div class="country-item" data-code="+61" data-country="Australia" data-flag="https://flagcdn.com/w20/au.png">
+                                        <div class="country-item-flag" style="background-image: url('https://flagcdn.com/w20/au.png')"></div>
+                                        <span class="country-item-name">Australia</span>
+                                        <span class="country-item-code">+61</span>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="phone-input">
+                                <input type="tel" id="signup-phone" placeholder="Enter your phone number">
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="input-group full-width-field">
+                        <label for="signup-password">Password</label>
+                        <input type="password" id="signup-password" placeholder="Create a password">
+                    </div>
+                    
+                    <div class="input-group full-width-field">
+                        <label for="signup-confirm-password">Confirm Password</label>
+                        <input type="password" id="signup-confirm-password" placeholder="Confirm your password">
+                    </div>
+
+                    <div class="checkbox-group">
+                        <input type="checkbox" id="terms-checkbox">
+                        <label for="terms-checkbox">I agree to the <a href="#" onclick="return false;">Terms & Conditions</a></label>
+                    </div>
+
+                    <div class="checkbox-group">
+                        <input type="checkbox" id="privacy-checkbox">
+                        <label for="privacy-checkbox">I accept the <a href="#" onclick="return false;">Privacy Policy</a></label>
+                    </div>
+                    
+                    <button class="btn" id="signup-btn" onclick="signup()" disabled>Sign Up</button>
+                    
+                    <div class="divider">or</div>
+                    
+                    <div class="social-login">
+                        <a href="https://accounts.google.com" class="social-btn" target="_blank">
+                            <i class="fab fa-google"></i>
+                        </a>
+                        <a href="https://www.linkedin.com" class="social-btn" target="_blank">
+                            <i class="fab fa-linkedin-in"></i>
+                        </a>
+                        <a href="https://appleid.apple.com" class="social-btn" target="_blank">
+                            <i class="fab fa-apple"></i>
+                        </a>
+                        <a href="https://github.com" class="social-btn" target="_blank">
+                            <i class="fab fa-github"></i>
+                        </a>
+                    </div>
+                    
+                    <p class="toggle-form">Already have an account? <a href="#" onclick="switchTab('login')">Login</a></p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div id="notification-container"></div>
+
+    <script>
+        const countries = [
+            { name: "United States", code: "+1", flag: "https://flagcdn.com/w20/us.png" },
+            { name: "United Kingdom", code: "+44", flag: "https://flagcdn.com/w20/gb.png" },
+            { name: "Syria", code: "+963", flag: "https://flagcdn.com/w20/sy.png" },
+            { name: "India", code: "+91", flag: "https://flagcdn.com/w20/in.png" },
+            { name: "China", code: "+86", flag: "https://flagcdn.com/w20/cn.png" },
+            { name: "Japan", code: "+81", flag: "https://flagcdn.com/w20/jp.png" },
+            { name: "Germany", code: "+49", flag: "https://flagcdn.com/w20/de.png" },
+            { name: "France", code: "+33", flag: "https://flagcdn.com/w20/fr.png" },
+            { name: "Russia", code: "+7", flag: "https://flagcdn.com/w20/ru.png" },
+            { name: "Brazil", code: "+55", flag: "https://flagcdn.com/w20/br.png" },
+            { name: "Australia", code: "+61", flag: "https://flagcdn.com/w20/au.png" },
+            { name: "Canada", code: "+1", flag: "https://flagcdn.com/w20/ca.png" },
+            { name: "Mexico", code: "+52", flag: "https://flagcdn.com/w20/mx.png" },
+            { name: "South Africa", code: "+27", flag: "https://flagcdn.com/w20/za.png" },
+            { name: "South Korea", code: "+82", flag: "https://flagcdn.com/w20/kr.png" },
+            { name: "Italy", code: "+39", flag: "https://flagcdn.com/w20/it.png" },
+            { name: "Spain", code: "+34", flag: "https://flagcdn.com/w20/es.png" },
+            { name: "Netherlands", code: "+31", flag: "https://flagcdn.com/w20/nl.png" },
+            { name: "Switzerland", code: "+41", flag: "https://flagcdn.com/w20/ch.png" },
+            { name: "Sweden", code: "+46", flag: "https://flagcdn.com/w20/se.png" },
+            { name: "Singapore", code: "+65", flag: "https://flagcdn.com/w20/sg.png" }
+        ];
+
+        function showNotification(message, type) {
+            const container = document.getElementById('notification-container');
+            const notification = document.createElement('div');
+            notification.className = `notification ${type}`;
+            
+            const icon = type === 'success' ? 'fa-check-circle' : 'fa-exclamation-circle';
+            notification.innerHTML = `<i class="fas ${icon}"></i> ${message}`;
+            
+            container.appendChild(notification);
+            
+            setTimeout(() => {
+                notification.classList.add('show');
+            }, 10);
+            
+            setTimeout(() => {
+                notification.classList.remove('show');
+                setTimeout(() => {
+                    notification.remove();
+                }, 400);
+            }, 4000);
+        }
+
+        function switchTab(tabName) {
+            const authContainer = document.getElementById('auth-container');
+            
+            document.getElementById('login-tab').classList.remove('active');
+            document.getElementById('signup-tab').classList.remove('active');
+            
+            if (tabName === 'login') {
+                document.getElementById('login-tab').classList.add('active');
+                authContainer.classList.remove('signup-active');
+                document.body.classList.remove('signup-active');
+                hideResetForm();
+            } else {
+                document.getElementById('signup-tab').classList.add('active');
+                authContainer.classList.add('signup-active');
+                document.body.classList.add('signup-active');
+            }
+            
+            authContainer.style.transform = 'translateY(5px)';
+            authContainer.style.opacity = '0.9';
+            
+            setTimeout(() => {
+                document.querySelectorAll('.form').forEach(form => {
+                    form.classList.remove('active');
+                    if (form.id.includes(tabName)) {
+                        setTimeout(() => {
+                            form.classList.add('active');
+                        }, 50);
+                    }
+                });
+                
+                authContainer.style.transform = tabName === 'signup' ? 'translateY(0) scale(1.02)' : 'translateY(0) scale(1)';
+                authContainer.style.opacity = '1';
+            }, 150);
+        }
+        
+        function showResetForm() {
+            document.getElementById('login-form').classList.remove('active');
+            document.getElementById('reset-form').classList.add('active');
+        }
+        
+        function hideResetForm() {
+            document.getElementById('reset-form').classList.remove('active');
+            document.getElementById('login-form').classList.add('active');
+        }
+        
+        function sendResetLink() {
+            const email = document.getElementById('reset-email').value;
+            
+            if (!email) {
+                showError('Please enter your email address');
+                return;
+            }
+            
+            showNotification(`Password reset link sent to ${email}`, 'success');
+            setTimeout(() => {
+                hideResetForm();
+                document.getElementById('reset-email').value = '';
+            }, 1500);
+        }
+        
+        function login() {
+            const email = document.getElementById('login-email').value;
+            const password = document.getElementById('login-password').value;
+            
+            if (!email || !password) {
+                showError('Please fill in all fields');
+                return;
+            }
+            
+            showNotification('Login successful! Redirecting...', 'success');
+            console.log('Login attempt with:', { email, password });
+        }
+        
+        function signup() {
+            const name = document.getElementById('signup-name').value;
+            const email = document.getElementById('signup-email').value;
+            const username = document.getElementById('signup-username').value;
+            const phone = document.getElementById('signup-phone').value;
+            const countryCode = document.getElementById('selected-code').textContent;
+            const password = document.getElementById('signup-password').value;
+            const confirmPassword = document.getElementById('signup-confirm-password').value;
+            const termsChecked = document.getElementById('terms-checkbox').checked;
+            const privacyChecked = document.getElementById('privacy-checkbox').checked;
+            
+            if (!name || !email || !username || !phone || !password || !confirmPassword) {
+                showError('Please fill in all fields');
+                return;
+            }
+            
+            if (password !== confirmPassword) {
+                showError('Passwords do not match');
+                return;
+            }
+
+            if (!termsChecked || !privacyChecked) {
+                showError('Please accept both Terms & Conditions and Privacy Policy');
+                return;
+            }
+            
+            const fullPhone = countryCode + phone;
+            showNotification('Account created successfully!', 'success');
+            console.log('Signup attempt with:', { name, email, username, phone: fullPhone, password });
+            
+            setTimeout(() => switchTab('login'), 1500);
+        }
+        
+        function showError(message) {
+            const authContainer = document.querySelector('.auth-container');
+            authContainer.style.animation = 'shake 0.5s';
+            setTimeout(() => {
+                authContainer.style.animation = '';
+            }, 500);
+            showNotification(message, 'error');
+        }
+
+        document.querySelectorAll('input').forEach(input => {
+            input.addEventListener('focus', function() {
+                const label = this.parentElement.querySelector('label');
+                if (label) {
+                    label.style.color = 'var(--primary-color)';
+                    label.style.transform = 'translateY(-2px)';
+                }
+            });
+            
+            input.addEventListener('blur', function() {
+                const label = this.parentElement.querySelector('label');
+                if (label) {
+                    label.style.color = 'var(--dark-gray)';
+                    label.style.transform = 'translateY(0)';
+                }
+            });
+        });
+
+        document.getElementById('terms-checkbox').addEventListener('change', validateCheckboxes);
+        document.getElementById('privacy-checkbox').addEventListener('change', validateCheckboxes);
+
+        function validateCheckboxes() {
+            const termsChecked = document.getElementById('terms-checkbox').checked;
+            const privacyChecked = document.getElementById('privacy-checkbox').checked;
+            document.getElementById('signup-btn').disabled = !(termsChecked && privacyChecked);
+        }
+
+        const countrySelectorBtn = document.getElementById('country-selector-btn');
+        const countryDropdown = document.getElementById('country-dropdown');
+        const selectedFlag = document.getElementById('selected-flag');
+        const selectedCode = document.getElementById('selected-code');
+        const selectedCountry = document.getElementById('selected-country');
+
+        countrySelectorBtn.addEventListener('click', function() {
+            countryDropdown.classList.toggle('show');
+        });
+
+        document.querySelectorAll('.country-item').forEach(item => {
+            item.addEventListener('click', function() {
+                const flag = this.getAttribute('data-flag');
+                const code = this.getAttribute('data-code');
+                const country = this.getAttribute('data-country');
+                
+                selectedFlag.style.backgroundImage = `url('${flag}')`;
+                selectedCode.textContent = code;
+                
+                countryDropdown.classList.remove('show');
+            });
+        });
+
+        document.addEventListener('click', function(event) {
+            if (!event.target.closest('.country-selector')) {
+                countryDropdown.classList.remove('show');
+            }
+        });
+    </script>
+</body>
+</html>

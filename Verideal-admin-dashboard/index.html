@@ -1,0 +1,1864 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Verideal Admin Dashboard</title>
+    <style>
+        :root {
+            --primary-color: #4a6fa5;
+            --secondary-color: #166088;
+            --accent-color: #4fc3f7;
+            --light-color: #f8f9fa;
+            --dark-color: #343a40;
+            --success-color: #28a745;
+            --warning-color: #ffc107;
+            --danger-color: #dc3545;
+            --border-radius: 5px;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        body {
+            background-color: #f5f5f5;
+            color: var(--dark-color);
+            line-height: 1.6;
+        }
+
+        .container {
+            display: flex;
+            min-height: 100vh;
+        }
+
+        /* Sidebar Styles */
+        .sidebar {
+            width: 250px;
+            background-color: var(--primary-color);
+            color: white;
+            padding: 20px 0;
+            transition: all 0.3s;
+            height: 100vh;
+            position: fixed;
+        }
+
+        .sidebar-header {
+            padding: 0 20px 20px;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .sidebar-header h3 {
+            color: white;
+            font-size: 1.5rem;
+        }
+
+        .sidebar-menu {
+            padding: 20px 0;
+        }
+
+        .sidebar-menu ul {
+            list-style: none;
+        }
+
+        .sidebar-menu li {
+            margin-bottom: 5px;
+        }
+
+        .sidebar-menu a {
+            display: block;
+            padding: 10px 20px;
+            color: white;
+            text-decoration: none;
+            transition: all 0.3s;
+            cursor: pointer;
+        }
+
+        .sidebar-menu a:hover,
+        .sidebar-menu a.active {
+            background-color: rgba(255, 255, 255, 0.1);
+            border-left: 3px solid var(--accent-color);
+        }
+
+        .sidebar-menu i {
+            margin-right: 10px;
+        }
+
+        /* Main Content Styles */
+        .main-content {
+            flex: 1;
+            margin-left: 250px;
+            padding: 20px;
+        }
+
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+            padding-bottom: 20px;
+            border-bottom: 1px solid #ddd;
+        }
+
+        .header h1 {
+            color: var(--secondary-color);
+        }
+
+        .user-info {
+            display: flex;
+            align-items: center;
+        }
+
+        .user-info img {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            margin-right: 10px;
+        }
+
+        /* Card Styles */
+        .card {
+            background-color: white;
+            border-radius: var(--border-radius);
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+            margin-bottom: 20px;
+            padding: 20px;
+        }
+
+        .card-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+            padding-bottom: 10px;
+            border-bottom: 1px solid #eee;
+        }
+
+        .card-header h2 {
+            color: var(--secondary-color);
+            font-size: 1.3rem;
+        }
+
+        /* Table Styles */
+        .table-responsive {
+            overflow-x: auto;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        table th,
+        table td {
+            padding: 12px 15px;
+            text-align: left;
+            border-bottom: 1px solid #ddd;
+        }
+
+        table th {
+            background-color: #f8f9fa;
+            font-weight: 600;
+            color: var(--dark-color);
+        }
+
+        table tr:hover {
+            background-color: #f5f5f5;
+        }
+
+        /* Form Styles */
+        .form-group {
+            margin-bottom: 15px;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 5px;
+            font-weight: 500;
+        }
+
+        .form-control {
+            width: 100%;
+            padding: 10px;
+            border: 1px solid #ddd;
+            border-radius: var(--border-radius);
+            font-size: 1rem;
+        }
+
+        .form-control:focus {
+            outline: none;
+            border-color: var(--accent-color);
+            box-shadow: 0 0 0 3px rgba(79, 195, 247, 0.25);
+        }
+
+        /* Button Styles */
+        .btn {
+            display: inline-block;
+            padding: 10px 15px;
+            border: none;
+            border-radius: var(--border-radius);
+            font-size: 1rem;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .btn-primary {
+            background-color: var(--primary-color);
+            color: white;
+        }
+
+        .btn-primary:hover {
+            background-color: var(--secondary-color);
+        }
+
+        .btn-success {
+            background-color: var(--success-color);
+            color: white;
+        }
+
+        .btn-success:hover {
+            background-color: #218838;
+        }
+
+        .btn-warning {
+            background-color: var(--warning-color);
+            color: var(--dark-color);
+        }
+
+        .btn-warning:hover {
+            background-color: #e0a800;
+        }
+
+        .btn-danger {
+            background-color: var(--danger-color);
+            color: white;
+        }
+
+        .btn-danger:hover {
+            background-color: #c82333;
+        }
+
+        .btn-sm {
+            padding: 5px 10px;
+            font-size: 0.875rem;
+        }
+
+        /* Search and Filter Styles */
+        .search-filter {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 20px;
+        }
+
+        .search-box {
+            flex: 1;
+            max-width: 400px;
+        }
+
+        .filter-options {
+            display: flex;
+            gap: 10px;
+        }
+
+        /* Modal Styles */
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.5);
+            z-index: 1000;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .modal-content {
+            background-color: white;
+            border-radius: var(--border-radius);
+            width: 90%;
+            max-width: 600px;
+            max-height: 90vh;
+            overflow-y: auto;
+            padding: 20px;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
+        }
+
+        .modal-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+            padding-bottom: 10px;
+            border-bottom: 1px solid #eee;
+        }
+
+        .modal-header h2 {
+            color: var(--secondary-color);
+        }
+
+        .modal-footer {
+            display: flex;
+            justify-content: flex-end;
+            gap: 10px;
+            margin-top: 20px;
+            padding-top: 10px;
+            border-top: 1px solid #eee;
+        }
+
+        .close {
+            font-size: 1.5rem;
+            font-weight: bold;
+            color: #aaa;
+            cursor: pointer;
+        }
+
+        .close:hover {
+            color: var(--dark-color);
+        }
+
+        /* Status Badges */
+        .badge {
+            display: inline-block;
+            padding: 5px 10px;
+            border-radius: 20px;
+            font-size: 0.75rem;
+            font-weight: 600;
+            text-transform: uppercase;
+        }
+
+        .badge-active {
+            background-color: #d4edda;
+            color: #155724;
+        }
+
+        .badge-suspended {
+            background-color: #fff3cd;
+            color: #856404;
+        }
+
+        .badge-banned {
+            background-color: #f8d7da;
+            color: #721c24;
+        }
+
+        .badge-pending {
+            background-color: #cce5ff;
+            color: #004085;
+        }
+
+        .badge-inactive {
+            background-color: #e2e3e5;
+            color: #383d41;
+        }
+
+        /* Responsive Styles */
+        @media (max-width: 768px) {
+            .container {
+                flex-direction: column;
+            }
+
+            .sidebar {
+                width: 100%;
+                height: auto;
+                position: relative;
+            }
+
+            .main-content {
+                margin-left: 0;
+            }
+
+            .search-filter {
+                flex-direction: column;
+                gap: 10px;
+            }
+
+            .search-box {
+                max-width: 100%;
+            }
+
+            .filter-options {
+                flex-wrap: wrap;
+            }
+        }
+
+        /* Checkbox for selection */
+        .select-checkbox {
+            width: 18px;
+            height: 18px;
+            cursor: pointer;
+        }
+
+        /* Action buttons container */
+        .action-buttons {
+            display: flex;
+            gap: 5px;
+        }
+
+        /* Bulk action controls */
+        .bulk-actions {
+            display: none;
+            margin-bottom: 15px;
+            padding: 10px;
+            background-color: #f8f9fa;
+            border-radius: var(--border-radius);
+        }
+
+        .bulk-actions.show {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        /* Toast notification */
+        .toast {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            padding: 15px 20px;
+            background-color: #333;
+            color: white;
+            border-radius: var(--border-radius);
+            box-shadow: 0 3px 10px rgba(0, 0, 0, 0.2);
+            z-index: 1100;
+            transform: translateY(100px);
+            opacity: 0;
+            transition: all 0.3s ease;
+        }
+
+        .toast.show {
+            transform: translateY(0);
+            opacity: 1;
+        }
+
+        .toast.success {
+            background-color: var(--success-color);
+        }
+
+        .toast.error {
+            background-color: var(--danger-color);
+        }
+
+        .toast.warning {
+            background-color: var(--warning-color);
+            color: var(--dark-color);
+        }
+
+        .toast.info {
+            background-color: var(--accent-color);
+        }
+
+        /* TOTP QR Code */
+        .qr-code-container {
+            text-align: center;
+            margin: 20px 0;
+        }
+
+        .qr-code {
+            width: 200px;
+            height: 200px;
+            margin: 0 auto;
+            background-color: white;
+            padding: 10px;
+            border: 1px solid #ddd;
+        }
+
+        .totp-code {
+            font-family: monospace;
+            font-size: 1.2rem;
+            letter-spacing: 2px;
+            margin: 10px 0;
+            padding: 10px;
+            background-color: #f8f9fa;
+            border-radius: var(--border-radius);
+        }
+
+        /* Verification status */
+        .verification-status {
+            display: inline-flex;
+            align-items: center;
+            gap: 5px;
+        }
+
+        .verification-badge {
+            padding: 3px 8px;
+            border-radius: 10px;
+            font-size: 0.7rem;
+            font-weight: bold;
+        }
+
+        .verified {
+            background-color: #d4edda;
+            color: #155724;
+        }
+
+        .unverified {
+            background-color: #f8d7da;
+            color: #721c24;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <!-- Sidebar -->
+        <div class="sidebar">
+            <div class="sidebar-header">
+                <h3>Verideal Admin</h3>
+            </div>
+            <div class="sidebar-menu">
+                <ul>
+                    <li><a href="#" class="active" data-section="users"><i>👥</i> Users</a></li>
+                    <li><a href="#" data-section="admins"><i>👑</i> Admins</a></li>
+                    <li><a href="#" data-section="authenticators"><i>🔐</i> Authenticators</a></li>
+                    <li><a href="#" data-section="analytics"><i>📊</i> Analytics</a></li>
+                    <li><a href="#" data-section="settings"><i>⚙️</i> Settings</a></li>
+                    <li><a href="#" data-section="logout"><i>🔒</i> Logout</a></li>
+                </ul>
+            </div>
+        </div>
+
+        <!-- Main Content -->
+        <div class="main-content">
+            <div class="header">
+                <h1 id="pageTitle">User Management</h1>
+                <div class="user-info">
+                    <img src="https://via.placeholder.com/40" alt="Admin">
+                    <span>Super Admin</span>
+                </div>
+            </div>
+
+            <!-- Users Section -->
+            <div class="content-section active" id="users-section">
+                <div class="card">
+                    <div class="card-header">
+                        <h2>All Users</h2>
+                        <button class="btn btn-primary" id="addUserBtn">Add New User</button>
+                    </div>
+
+                    <!-- Bulk Actions -->
+                    <div class="bulk-actions" id="userBulkActions">
+                        <span id="selectedCount">0 users selected</span>
+                        <select class="form-control" id="bulkActionSelect" style="width: auto;">
+                            <option value="">Choose action...</option>
+                            <option value="activate">Activate</option>
+                            <option value="suspend">Suspend</option>
+                            <option value="ban">Ban</option>
+                            <option value="delete">Delete</option>
+                        </select>
+                        <button class="btn btn-primary btn-sm" id="applyBulkAction">Apply</button>
+                        <button class="btn btn-danger btn-sm" id="clearSelection">Clear</button>
+                    </div>
+
+                    <!-- Search and Filter -->
+                    <div class="search-filter">
+                        <div class="search-box">
+                            <input type="text" class="form-control" id="userSearch" placeholder="Search users...">
+                        </div>
+                        <div class="filter-options">
+                            <select class="form-control" id="statusFilter">
+                                <option value="">All Statuses</option>
+                                <option value="active">Active</option>
+                                <option value="suspended">Suspended</option>
+                                <option value="banned">Banned</option>
+                                <option value="pending">Pending</option>
+                            </select>
+                            <select class="form-control" id="sortBy">
+                                <option value="name-asc">Sort by: Name (A-Z)</option>
+                                <option value="name-desc">Sort by: Name (Z-A)</option>
+                                <option value="date-asc">Sort by: Date (Oldest)</option>
+                                <option value="date-desc">Sort by: Date (Newest)</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <!-- Users Table -->
+                    <div class="table-responsive">
+                        <table id="usersTable">
+                            <thead>
+                                <tr>
+                                    <th width="50px"><input type="checkbox" id="selectAllUsers"></th>
+                                    <th>ID</th>
+                                    <th>Name</th>
+                                    <th>Email</th>
+                                    <th>Phone</th>
+                                    <th>Card Serial</th>
+                                    <th>Status</th>
+                                    <th>Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody id="usersTableBody">
+                                <!-- Users will be loaded here dynamically -->
+                            </tbody>
+                        </table>
+                    </div>
+
+                    <!-- Pagination -->
+                    <div style="display: flex; justify-content: space-between; align-items: center; margin-top: 20px;">
+                        <div>Showing <span id="showingFrom">1</span> to <span id="showingTo">10</span> of <span id="totalUsers">0</span> users</div>
+                        <div>
+                            <button class="btn btn-sm" id="prevPage" disabled>Previous</button>
+                            <span id="pageInfo">Page 1</span>
+                            <button class="btn btn-sm" id="nextPage" disabled>Next</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Admins Section -->
+            <div class="content-section" id="admins-section">
+                <div class="card">
+                    <div class="card-header">
+                        <h2>Administrators</h2>
+                        <button class="btn btn-primary" id="addAdminBtn">Add New Admin</button>
+                    </div>
+
+                    <!-- Admins Table -->
+                    <div class="table-responsive">
+                        <table id="adminsTable">
+                            <thead>
+                                <tr>
+                                    <th>ID</th>
+                                    <th>Name</th>
+                                    <th>Email</th>
+                                    <th>Phone</th>
+                                    <th>Role</th>
+                                    <th>Status</th>
+                                    <th>Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody id="adminsTableBody">
+                                <!-- Admins will be loaded here dynamically -->
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Authenticators Section -->
+            <div class="content-section" id="authenticators-section">
+                <div class="card">
+                    <div class="card-header">
+                        <h2>Two-Factor Authenticators</h2>
+                        <button class="btn btn-primary" id="addAuthenticatorBtn">Assign New Authenticator</button>
+                    </div>
+
+                    <!-- Search and Filter -->
+                    <div class="search-filter">
+                        <div class="search-box">
+                            <input type="text" class="form-control" id="authenticatorSearch" placeholder="Search authenticators...">
+                        </div>
+                        <div class="filter-options">
+                            <select class="form-control" id="authenticatorStatusFilter">
+                                <option value="">All Statuses</option>
+                                <option value="active">Active</option>
+                                <option value="inactive">Inactive</option>
+                            </select>
+                            <select class="form-control" id="authenticatorTypeFilter">
+                                <option value="">All Types</option>
+                                <option value="totp">TOTP</option>
+                                <option value="sms">SMS</option>
+                                <option value="email">Email</option>
+                                <option value="backup">Backup Code</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <!-- Authenticators Table -->
+                    <div class="table-responsive">
+                        <table id="authenticatorsTable">
+                            <thead>
+                                <tr>
+                                    <th>ID</th>
+                                    <th>User</th>
+                                    <th>Type</th>
+                                    <th>Status</th>
+                                    <th>Last Used</th>
+                                    <th>Verification</th>
+                                    <th>Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody id="authenticatorsTableBody">
+                                <!-- Authenticators will be loaded here dynamically -->
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Analytics Section -->
+            <div class="content-section" id="analytics-section">
+                <div class="card">
+                    <div class="card-header">
+                        <h2>System Analytics</h2>
+                    </div>
+                    <div style="padding: 20px; text-align: center;">
+                        <h3>Coming Soon</h3>
+                        <p>Analytics dashboard will be available in the next update.</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Settings Section -->
+            <div class="content-section" id="settings-section">
+                <div class="card">
+                    <div class="card-header">
+                        <h2>System Settings</h2>
+                    </div>
+                    <div style="padding: 20px; text-align: center;">
+                        <h3>Coming Soon</h3>
+                        <p>Settings panel will be available in the next update.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Add/Edit User Modal -->
+    <div class="modal" id="userModal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2 id="userModalTitle">Add New User</h2>
+                <span class="close">&times;</span>
+            </div>
+            <form id="userForm">
+                <input type="hidden" id="userId">
+                <div class="form-group">
+                    <label for="userName">Full Name</label>
+                    <input type="text" class="form-control" id="userName" required>
+                </div>
+                <div class="form-group">
+                    <label for="userEmail">Email</label>
+                    <input type="email" class="form-control" id="userEmail" required>
+                </div>
+                <div class="form-group">
+                    <label for="userPhone">Phone Number</label>
+                    <input type="tel" class="form-control" id="userPhone">
+                </div>
+                <div class="form-group">
+                    <label for="userCardSerial">Card Serial Number</label>
+                    <input type="text" class="form-control" id="userCardSerial">
+                </div>
+                <div class="form-group">
+                    <label for="userStatus">Status</label>
+                    <select class="form-control" id="userStatus" required>
+                        <option value="active">Active</option>
+                        <option value="suspended">Suspended</option>
+                        <option value="banned">Banned</option>
+                        <option value="pending">Pending</option>
+                    </select>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-danger" id="cancelUserBtn">Cancel</button>
+                    <button type="submit" class="btn btn-success" id="saveUserBtn">Save User</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Add/Edit Admin Modal -->
+    <div class="modal" id="adminModal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2 id="adminModalTitle">Add New Admin</h2>
+                <span class="close">&times;</span>
+            </div>
+            <form id="adminForm">
+                <input type="hidden" id="adminId">
+                <div class="form-group">
+                    <label for="adminName">Full Name</label>
+                    <input type="text" class="form-control" id="adminName" required>
+                </div>
+                <div class="form-group">
+                    <label for="adminEmail">Email</label>
+                    <input type="email" class="form-control" id="adminEmail" required>
+                </div>
+                <div class="form-group">
+                    <label for="adminPhone">Phone Number</label>
+                    <input type="tel" class="form-control" id="adminPhone">
+                </div>
+                <div class="form-group">
+                    <label for="adminRole">Role</label>
+                    <select class="form-control" id="adminRole" required>
+                        <option value="super">Super Admin</option>
+                        <option value="content">Content Admin</option>
+                        <option value="support">Support Admin</option>
+                        <option value="moderator">Moderator</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label for="adminStatus">Status</label>
+                    <select class="form-control" id="adminStatus" required>
+                        <option value="active">Active</option>
+                        <option value="inactive">Inactive</option>
+                    </select>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-danger" id="cancelAdminBtn">Cancel</button>
+                    <button type="submit" class="btn btn-success" id="saveAdminBtn">Save Admin</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Add/Edit Authenticator Modal -->
+    <div class="modal" id="authenticatorModal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2 id="authenticatorModalTitle">Assign New Authenticator</h2>
+                <span class="close">&times;</span>
+            </div>
+            <form id="authenticatorForm">
+                <input type="hidden" id="authenticatorId">
+                <div class="form-group">
+                    <label for="authenticatorUser">User</label>
+                    <select class="form-control" id="authenticatorUser" required>
+                        <option value="">Select User</option>
+                        <!-- Users will be populated here -->
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label for="authenticatorType">Type</label>
+                    <select class="form-control" id="authenticatorType" required>
+                        <option value="totp">TOTP (Time-based One-Time Password)</option>
+                        <option value="sms">SMS Verification</option>
+                        <option value="email">Email Verification</option>
+                        <option value="backup">Backup Code</option>
+                    </select>
+                </div>
+                
+                <!-- TOTP Section (shown only when TOTP is selected) -->
+                <div id="totpSection" style="display: none;">
+                    <div class="qr-code-container">
+                        <p>Scan this QR code with your authenticator app:</p>
+                        <div class="qr-code" id="qrCodePlaceholder">
+                            <!-- QR code will be generated here -->
+                            <div style="display: flex; justify-content: center; align-items: center; height: 100%;">
+                                <p>QR Code will appear after user selection</p>
+                            </div>
+                        </div>
+                        <p>Or enter this code manually:</p>
+                        <div class="totp-code" id="totpSecretKey">Not generated yet</div>
+                    </div>
+                </div>
+                
+                <div class="form-group">
+                    <label for="authenticatorStatus">Status</label>
+                    <select class="form-control" id="authenticatorStatus" required>
+                        <option value="active">Active</option>
+                        <option value="inactive">Inactive</option>
+                    </select>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-danger" id="cancelAuthenticatorBtn">Cancel</button>
+                    <button type="submit" class="btn btn-success" id="saveAuthenticatorBtn">Save Authenticator</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- View Authenticator Modal -->
+    <div class="modal" id="viewAuthenticatorModal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2 id="viewAuthenticatorModalTitle">Authenticator Details</h2>
+                <span class="close">&times;</span>
+            </div>
+            <div class="modal-body">
+                <div class="form-group">
+                    <label>User:</label>
+                    <p id="viewAuthenticatorUser"></p>
+                </div>
+                <div class="form-group">
+                    <label>Type:</label>
+                    <p id="viewAuthenticatorType"></p>
+                </div>
+                <div class="form-group">
+                    <label>Status:</label>
+                    <p id="viewAuthenticatorStatus"></p>
+                </div>
+                <div class="form-group">
+                    <label>Created At:</label>
+                    <p id="viewAuthenticatorCreated"></p>
+                </div>
+                <div class="form-group">
+                    <label>Last Used:</label>
+                    <p id="viewAuthenticatorLastUsed"></p>
+                </div>
+                
+                <div id="viewTotpSection" style="display: none;">
+                    <div class="qr-code-container">
+                        <p>QR Code for this authenticator:</p>
+                        <div class="qr-code" id="viewQrCodePlaceholder">
+                            <!-- QR code will be displayed here -->
+                        </div>
+                        <p>Secret Key:</p>
+                        <div class="totp-code" id="viewTotpSecretKey"></div>
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-danger" id="closeViewAuthenticatorBtn">Close</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Confirmation Modal -->
+    <div class="modal" id="confirmModal">
+        <div class="modal-content" style="max-width: 400px;">
+            <div class="modal-header">
+                <h2 id="confirmModalTitle">Confirm Action</h2>
+                <span class="close">&times;</span>
+            </div>
+            <div class="modal-body">
+                <p id="confirmModalMessage">Are you sure you want to perform this action?</p>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-danger" id="cancelConfirmBtn">Cancel</button>
+                <button type="button" class="btn btn-success" id="confirmActionBtn">Confirm</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Toast Notification -->
+    <div class="toast" id="toastNotification"></div>
+
+    <script>
+        // Sample data - in a real app, this would come from a database
+        let users = [
+            { id: 1, name: "John Doe", email: "john@example.com", phone: "1234567890", cardSerial: "CARD123456", status: "active" },
+            { id: 2, name: "Jane Smith", email: "jane@example.com", phone: "9876543210", cardSerial: "CARD654321", status: "active" },
+            { id: 3, name: "Bob Johnson", email: "bob@example.com", phone: "5551234567", cardSerial: "CARD789012", status: "suspended" },
+            { id: 4, name: "Alice Brown", email: "alice@example.com", phone: "4449876543", cardSerial: "CARD345678", status: "banned" },
+            { id: 5, name: "Charlie Wilson", email: "charlie@example.com", phone: "7775551234", cardSerial: "CARD901234", status: "pending" },
+            { id: 6, name: "Diana Miller", email: "diana@example.com", phone: "2223334444", cardSerial: "CARD567890", status: "active" },
+            { id: 7, name: "Ethan Davis", email: "ethan@example.com", phone: "8889990000", cardSerial: "CARD123890", status: "active" },
+            { id: 8, name: "Fiona Garcia", email: "fiona@example.com", phone: "1112223333", cardSerial: "CARD456123", status: "suspended" },
+            { id: 9, name: "George Martinez", email: "george@example.com", phone: "6667778888", cardSerial: "CARD789456", status: "active" },
+            { id: 10, name: "Hannah Robinson", email: "hannah@example.com", phone: "3334445555", cardSerial: "CARD012345", status: "pending" }
+        ];
+
+        let admins = [
+            { id: 1, name: "Admin One", email: "admin1@verideal.com", phone: "1111111111", role: "super", status: "active" },
+            { id: 2, name: "Admin Two", email: "admin2@verideal.com", phone: "2222222222", role: "content", status: "active" },
+            { id: 3, name: "Admin Three", email: "admin3@verideal.com", phone: "3333333333", role: "support", status: "inactive" }
+        ];
+
+        let authenticators = [
+            { id: 1, userId: 1, userName: "John Doe", type: "totp", status: "active", secretKey: "JBSWY3DPEHPK3PXP", createdAt: "2023-05-15", lastUsed: "2023-06-20", verified: true },
+            { id: 2, userId: 2, userName: "Jane Smith", type: "sms", status: "active", phone: "9876543210", createdAt: "2023-05-16", lastUsed: "2023-06-18", verified: true },
+            { id: 3, userId: 3, userName: "Bob Johnson", type: "email", status: "inactive", email: "bob@example.com", createdAt: "2023-05-17", lastUsed: "2023-05-20", verified: false },
+            { id: 4, userId: 5, userName: "Charlie Wilson", type: "backup", status: "active", codes: ["ABC123", "DEF456", "GHI789"], createdAt: "2023-05-18", lastUsed: "2023-06-15", verified: true }
+        ];
+
+        // Current page and items per page for pagination
+        let currentPage = 1;
+        const itemsPerPage = 5;
+        let selectedUsers = [];
+        let currentSection = "users";
+
+        // DOM elements
+        const usersTableBody = document.getElementById('usersTableBody');
+        const adminsTableBody = document.getElementById('adminsTableBody');
+        const authenticatorsTableBody = document.getElementById('authenticatorsTableBody');
+        const userModal = document.getElementById('userModal');
+        const adminModal = document.getElementById('adminModal');
+        const authenticatorModal = document.getElementById('authenticatorModal');
+        const viewAuthenticatorModal = document.getElementById('viewAuthenticatorModal');
+        const confirmModal = document.getElementById('confirmModal');
+        const userForm = document.getElementById('userForm');
+        const adminForm = document.getElementById('adminForm');
+        const authenticatorForm = document.getElementById('authenticatorForm');
+        const userSearch = document.getElementById('userSearch');
+        const authenticatorSearch = document.getElementById('authenticatorSearch');
+        const statusFilter = document.getElementById('statusFilter');
+        const authenticatorStatusFilter = document.getElementById('authenticatorStatusFilter');
+        const authenticatorTypeFilter = document.getElementById('authenticatorTypeFilter');
+        const sortBy = document.getElementById('sortBy');
+        const selectAllUsers = document.getElementById('selectAllUsers');
+        const userBulkActions = document.getElementById('userBulkActions');
+        const selectedCount = document.getElementById('selectedCount');
+        const bulkActionSelect = document.getElementById('bulkActionSelect');
+        const applyBulkAction = document.getElementById('applyBulkAction');
+        const clearSelection = document.getElementById('clearSelection');
+        const prevPage = document.getElementById('prevPage');
+        const nextPage = document.getElementById('nextPage');
+        const pageInfo = document.getElementById('pageInfo');
+        const showingFrom = document.getElementById('showingFrom');
+        const showingTo = document.getElementById('showingTo');
+        const totalUsers = document.getElementById('totalUsers');
+        const toastNotification = document.getElementById('toastNotification');
+        const pageTitle = document.getElementById('pageTitle');
+        const contentSections = document.querySelectorAll('.content-section');
+        const sidebarLinks = document.querySelectorAll('.sidebar-menu a');
+        const totpSection = document.getElementById('totpSection');
+        const authenticatorType = document.getElementById('authenticatorType');
+        const authenticatorUser = document.getElementById('authenticatorUser');
+        const qrCodePlaceholder = document.getElementById('qrCodePlaceholder');
+        const totpSecretKey = document.getElementById('totpSecretKey');
+
+        // Initialize the page
+        document.addEventListener('DOMContentLoaded', () => {
+            renderUsersTable();
+            renderAdminsTable();
+            renderAuthenticatorsTable();
+            setupEventListeners();
+            populateUserDropdown();
+        });
+
+        // Render users table
+        function renderUsersTable() {
+            usersTableBody.innerHTML = '';
+            
+            // Filter and sort users
+            let filteredUsers = filterAndSortUsers();
+            
+            // Update pagination info
+            const totalPages = Math.ceil(filteredUsers.length / itemsPerPage);
+            const startIndex = (currentPage - 1) * itemsPerPage;
+            const endIndex = Math.min(startIndex + itemsPerPage, filteredUsers.length);
+            const paginatedUsers = filteredUsers.slice(startIndex, endIndex);
+            
+            // Update pagination controls
+            totalUsers.textContent = filteredUsers.length;
+            showingFrom.textContent = startIndex + 1;
+            showingTo.textContent = endIndex;
+            pageInfo.textContent = `Page ${currentPage} of ${totalPages}`;
+            prevPage.disabled = currentPage === 1;
+            nextPage.disabled = currentPage === totalPages || totalPages === 0;
+            
+            // Render users
+            paginatedUsers.forEach(user => {
+                const isSelected = selectedUsers.includes(user.id);
+                const row = document.createElement('tr');
+                
+                row.innerHTML = `
+                    <td><input type="checkbox" class="select-checkbox" data-user-id="${user.id}" ${isSelected ? 'checked' : ''}></td>
+                    <td>${user.id}</td>
+                    <td>${user.name}</td>
+                    <td>${user.email}</td>
+                    <td>${user.phone}</td>
+                    <td>${user.cardSerial}</td>
+                    <td><span class="badge badge-${user.status}">${user.status}</span></td>
+                    <td class="action-buttons">
+                        <button class="btn btn-primary btn-sm edit-user" data-user-id="${user.id}">Edit</button>
+                        <button class="btn btn-danger btn-sm delete-user" data-user-id="${user.id}">Delete</button>
+                    </td>
+                `;
+                
+                usersTableBody.appendChild(row);
+            });
+            
+            // Update bulk actions visibility
+            if (selectedUsers.length > 0) {
+                userBulkActions.classList.add('show');
+                selectedCount.textContent = `${selectedUsers.length} user${selectedUsers.length > 1 ? 's' : ''} selected`;
+            } else {
+                userBulkActions.classList.remove('show');
+            }
+        }
+
+        // Filter and sort users
+        function filterAndSortUsers() {
+            let filteredUsers = [...users];
+            
+            // Apply search filter
+            const searchTerm = userSearch.value.toLowerCase();
+            if (searchTerm) {
+                filteredUsers = filteredUsers.filter(user => 
+                    user.name.toLowerCase().includes(searchTerm) || 
+                    user.email.toLowerCase().includes(searchTerm) ||
+                    user.phone.toLowerCase().includes(searchTerm) ||
+                    user.cardSerial.toLowerCase().includes(searchTerm)
+                );
+            }
+            
+            // Apply status filter
+            const statusFilterValue = statusFilter.value;
+            if (statusFilterValue) {
+                filteredUsers = filteredUsers.filter(user => user.status === statusFilterValue);
+            }
+            
+            // Apply sorting
+            const sortValue = sortBy.value;
+            if (sortValue) {
+                const [sortField, sortDirection] = sortValue.split('-');
+                
+                filteredUsers.sort((a, b) => {
+                    if (sortField === 'name') {
+                        return sortDirection === 'asc' 
+                            ? a.name.localeCompare(b.name) 
+                            : b.name.localeCompare(a.name);
+                    } else if (sortField === 'date') {
+                        // Assuming date is based on ID for this example
+                        return sortDirection === 'asc' ? a.id - b.id : b.id - a.id;
+                    }
+                    return 0;
+                });
+            }
+            
+            return filteredUsers;
+        }
+
+        // Render admins table
+        function renderAdminsTable() {
+            adminsTableBody.innerHTML = '';
+            
+            admins.forEach(admin => {
+                const row = document.createElement('tr');
+                
+                row.innerHTML = `
+                    <td>${admin.id}</td>
+                    <td>${admin.name}</td>
+                    <td>${admin.email}</td>
+                    <td>${admin.phone}</td>
+                    <td>${admin.role}</td>
+                    <td><span class="badge ${admin.status === 'active' ? 'badge-active' : 'badge-inactive'}">${admin.status}</span></td>
+                    <td class="action-buttons">
+                        <button class="btn btn-primary btn-sm edit-admin" data-admin-id="${admin.id}">Edit</button>
+                        <button class="btn btn-danger btn-sm delete-admin" data-admin-id="${admin.id}">Delete</button>
+                    </td>
+                `;
+                
+                adminsTableBody.appendChild(row);
+            });
+        }
+
+        // Render authenticators table
+        function renderAuthenticatorsTable() {
+            authenticatorsTableBody.innerHTML = '';
+            
+            // Apply filters
+            let filteredAuthenticators = [...authenticators];
+            
+            // Search filter
+            const searchTerm = authenticatorSearch.value.toLowerCase();
+            if (searchTerm) {
+                filteredAuthenticators = filteredAuthenticators.filter(auth => 
+                    auth.userName.toLowerCase().includes(searchTerm) || 
+                    auth.type.toLowerCase().includes(searchTerm)
+                );
+            }
+            
+            // Status filter
+            const statusFilterValue = authenticatorStatusFilter.value;
+            if (statusFilterValue) {
+                filteredAuthenticators = filteredAuthenticators.filter(auth => auth.status === statusFilterValue);
+            }
+            
+            // Type filter
+            const typeFilterValue = authenticatorTypeFilter.value;
+            if (typeFilterValue) {
+                filteredAuthenticators = filteredAuthenticators.filter(auth => auth.type === typeFilterValue);
+            }
+            
+            // Render authenticators
+            filteredAuthenticators.forEach(auth => {
+                const row = document.createElement('tr');
+                
+                row.innerHTML = `
+                    <td>${auth.id}</td>
+                    <td>${auth.userName}</td>
+                    <td>${auth.type.toUpperCase()}</td>
+                    <td><span class="badge ${auth.status === 'active' ? 'badge-active' : 'badge-inactive'}">${auth.status}</span></td>
+                    <td>${auth.lastUsed}</td>
+                    <td>
+                        <span class="verification-status">
+                            <span class="verification-badge ${auth.verified ? 'verified' : 'unverified'}">
+                                ${auth.verified ? 'Verified' : 'Unverified'}
+                            </span>
+                        </span>
+                    </td>
+                    <td class="action-buttons">
+                        <button class="btn btn-primary btn-sm view-authenticator" data-auth-id="${auth.id}">View</button>
+                        <button class="btn btn-danger btn-sm delete-authenticator" data-auth-id="${auth.id}">Delete</button>
+                    </td>
+                `;
+                
+                authenticatorsTableBody.appendChild(row);
+            });
+        }
+
+        // Populate user dropdown for authenticator assignment
+        function populateUserDropdown() {
+            authenticatorUser.innerHTML = '<option value="">Select User</option>';
+            users.forEach(user => {
+                if (user.status === 'active') {
+                    const option = document.createElement('option');
+                    option.value = user.id;
+                    option.textContent = `${user.name} (${user.email})`;
+                    authenticatorUser.appendChild(option);
+                }
+            });
+        }
+
+        // Generate a random TOTP secret (for demo purposes)
+        function generateTotpSecret() {
+            const chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ234567';
+            let secret = '';
+            for (let i = 0; i < 16; i++) {
+                secret += chars.charAt(Math.floor(Math.random() * chars.length));
+            }
+            return secret;
+        }
+
+        // Show toast notification
+        function showToast(message, type = 'info', duration = 3000) {
+            toastNotification.textContent = message;
+            toastNotification.className = 'toast show';
+            toastNotification.classList.add(type);
+            
+            setTimeout(() => {
+                toastNotification.className = 'toast';
+            }, duration);
+        }
+
+        // Switch between sections
+        function showSection(sectionId) {
+            contentSections.forEach(section => {
+                section.classList.remove('active');
+                if (section.id === `${sectionId}-section`) {
+                    section.classList.add('active');
+                }
+            });
+            
+            // Update active sidebar link
+            sidebarLinks.forEach(link => {
+                link.classList.remove('active');
+                if (link.getAttribute('data-section') === sectionId) {
+                    link.classList.add('active');
+                }
+            });
+            
+            // Update page title
+            const sectionTitles = {
+                'users': 'User Management',
+                'admins': 'Admin Management',
+                'authenticators': 'Authenticator Management',
+                'analytics': 'System Analytics',
+                'settings': 'System Settings'
+            };
+            
+            pageTitle.textContent = sectionTitles[sectionId] || 'Verideal Admin';
+            currentSection = sectionId;
+            
+            // Reset pagination when switching sections
+            if (sectionId === 'users') {
+                currentPage = 1;
+                renderUsersTable();
+            }
+        }
+
+        // Setup event listeners
+        function setupEventListeners() {
+            // Sidebar navigation
+            sidebarLinks.forEach(link => {
+                link.addEventListener('click', (e) => {
+                    e.preventDefault();
+                    const section = link.getAttribute('data-section');
+                    if (section === 'logout') {
+                        showToast('Logout functionality would go here', 'info');
+                    } else {
+                        showSection(section);
+                    }
+                });
+            });
+            
+            // User modal buttons
+            document.getElementById('addUserBtn').addEventListener('click', () => openUserModal());
+            document.getElementById('cancelUserBtn').addEventListener('click', () => closeUserModal());
+            document.getElementById('saveUserBtn').addEventListener('click', (e) => {
+                e.preventDefault();
+                saveUser();
+            });
+            
+            // Admin modal buttons
+            document.getElementById('addAdminBtn').addEventListener('click', () => openAdminModal());
+            document.getElementById('cancelAdminBtn').addEventListener('click', () => closeAdminModal());
+            document.getElementById('saveAdminBtn').addEventListener('click', (e) => {
+                e.preventDefault();
+                saveAdmin();
+            });
+            
+            // Authenticator modal buttons
+            document.getElementById('addAuthenticatorBtn').addEventListener('click', () => openAuthenticatorModal());
+            document.getElementById('cancelAuthenticatorBtn').addEventListener('click', () => closeAuthenticatorModal());
+            document.getElementById('saveAuthenticatorBtn').addEventListener('click', (e) => {
+                e.preventDefault();
+                saveAuthenticator();
+            });
+            
+            // View authenticator modal
+            document.getElementById('closeViewAuthenticatorBtn').addEventListener('click', () => closeViewAuthenticatorModal());
+            
+            // Confirm modal buttons
+            document.getElementById('cancelConfirmBtn').addEventListener('click', () => closeConfirmModal());
+            document.getElementById('confirmActionBtn').addEventListener('click', () => confirmAction());
+            
+            // Close modals when clicking X
+            document.querySelectorAll('.close').forEach(closeBtn => {
+                closeBtn.addEventListener('click', () => {
+                    if (userModal.style.display === 'flex') closeUserModal();
+                    if (adminModal.style.display === 'flex') closeAdminModal();
+                    if (authenticatorModal.style.display === 'flex') closeAuthenticatorModal();
+                    if (viewAuthenticatorModal.style.display === 'flex') closeViewAuthenticatorModal();
+                    if (confirmModal.style.display === 'flex') closeConfirmModal();
+                });
+            });
+            
+            // Close modals when clicking outside
+            window.addEventListener('click', (e) => {
+                if (e.target === userModal) closeUserModal();
+                if (e.target === adminModal) closeAdminModal();
+                if (e.target === authenticatorModal) closeAuthenticatorModal();
+                if (e.target === viewAuthenticatorModal) closeViewAuthenticatorModal();
+                if (e.target === confirmModal) closeConfirmModal();
+            });
+            
+            // User filter and search events
+            userSearch.addEventListener('input', () => {
+                currentPage = 1;
+                renderUsersTable();
+            });
+            
+            statusFilter.addEventListener('change', () => {
+                currentPage = 1;
+                renderUsersTable();
+            });
+            
+            sortBy.addEventListener('change', () => {
+                renderUsersTable();
+            });
+            
+            // Authenticator filter events
+            authenticatorSearch.addEventListener('input', () => {
+                renderAuthenticatorsTable();
+            });
+            
+            authenticatorStatusFilter.addEventListener('change', () => {
+                renderAuthenticatorsTable();
+            });
+            
+            authenticatorTypeFilter.addEventListener('change', () => {
+                renderAuthenticatorsTable();
+            });
+            
+            // Authenticator type change
+            authenticatorType.addEventListener('change', () => {
+                if (authenticatorType.value === 'totp') {
+                    totpSection.style.display = 'block';
+                    // Generate a new TOTP secret when user is selected
+                    authenticatorUser.addEventListener('change', generateQrCode);
+                } else {
+                    totpSection.style.display = 'none';
+                    authenticatorUser.removeEventListener('change', generateQrCode);
+                }
+            });
+            
+            // Pagination controls
+            prevPage.addEventListener('click', () => {
+                if (currentPage > 1) {
+                    currentPage--;
+                    renderUsersTable();
+                }
+            });
+            
+            nextPage.addEventListener('click', () => {
+                const filteredUsers = filterAndSortUsers();
+                const totalPages = Math.ceil(filteredUsers.length / itemsPerPage);
+                
+                if (currentPage < totalPages) {
+                    currentPage++;
+                    renderUsersTable();
+                }
+            });
+            
+            // Select all users checkbox
+            selectAllUsers.addEventListener('change', (e) => {
+                const checkboxes = document.querySelectorAll('.select-checkbox');
+                const isChecked = e.target.checked;
+                
+                checkboxes.forEach(checkbox => {
+                    checkbox.checked = isChecked;
+                    const userId = parseInt(checkbox.getAttribute('data-user-id'));
+                    
+                    if (isChecked && !selectedUsers.includes(userId)) {
+                        selectedUsers.push(userId);
+                    } else if (!isChecked) {
+                        selectedUsers = selectedUsers.filter(id => id !== userId);
+                    }
+                });
+                
+                renderUsersTable();
+            });
+            
+            // Individual user selection
+            usersTableBody.addEventListener('change', (e) => {
+                if (e.target.classList.contains('select-checkbox')) {
+                    const userId = parseInt(e.target.getAttribute('data-user-id'));
+                    
+                    if (e.target.checked) {
+                        if (!selectedUsers.includes(userId)) {
+                            selectedUsers.push(userId);
+                        }
+                    } else {
+                        selectedUsers = selectedUsers.filter(id => id !== userId);
+                        selectAllUsers.checked = false;
+                    }
+                    
+                    renderUsersTable();
+                }
+            });
+            
+            // Bulk actions
+            applyBulkAction.addEventListener('click', () => {
+                const action = bulkActionSelect.value;
+                
+                if (action && selectedUsers.length > 0) {
+                    showConfirmModal(
+                        `Are you sure you want to ${action} ${selectedUsers.length} user${selectedUsers.length > 1 ? 's' : ''}?`,
+                        () => {
+                            // Apply bulk action
+                            users = users.map(user => {
+                                if (selectedUsers.includes(user.id)) {
+                                    if (action === 'delete') {
+                                        return null; // Mark for deletion
+                                    } else {
+                                        return { ...user, status: action };
+                                    }
+                                }
+                                return user;
+                            }).filter(user => user !== null); // Remove deleted users
+                            
+                            selectedUsers = [];
+                            renderUsersTable();
+                            closeConfirmModal();
+                            showToast(`Successfully ${action}d ${selectedUsers.length} users`, 'success');
+                        }
+                    );
+                }
+            });
+            
+            clearSelection.addEventListener('click', () => {
+                selectedUsers = [];
+                selectAllUsers.checked = false;
+                renderUsersTable();
+            });
+            
+            // Edit/delete user buttons (delegated events)
+            usersTableBody.addEventListener('click', (e) => {
+                if (e.target.classList.contains('edit-user')) {
+                    const userId = parseInt(e.target.getAttribute('data-user-id'));
+                    editUser(userId);
+                }
+                
+                if (e.target.classList.contains('delete-user')) {
+                    const userId = parseInt(e.target.getAttribute('data-user-id'));
+                    showConfirmModal(
+                        `Are you sure you want to delete user #${userId}?`,
+                        () => {
+                            users = users.filter(user => user.id !== userId);
+                            selectedUsers = selectedUsers.filter(id => id !== userId);
+                            renderUsersTable();
+                            closeConfirmModal();
+                            showToast('User deleted successfully', 'success');
+                        }
+                    );
+                }
+            });
+            
+            // Edit/delete admin buttons (delegated events)
+            adminsTableBody.addEventListener('click', (e) => {
+                if (e.target.classList.contains('edit-admin')) {
+                    const adminId = parseInt(e.target.getAttribute('data-admin-id'));
+                    editAdmin(adminId);
+                }
+                
+                if (e.target.classList.contains('delete-admin')) {
+                    const adminId = parseInt(e.target.getAttribute('data-admin-id'));
+                    showConfirmModal(
+                        `Are you sure you want to delete admin #${adminId}?`,
+                        () => {
+                            admins = admins.filter(admin => admin.id !== adminId);
+                            renderAdminsTable();
+                            closeConfirmModal();
+                            showToast('Admin deleted successfully', 'success');
+                        }
+                    );
+                }
+            });
+            
+            // View/delete authenticator buttons (delegated events)
+            authenticatorsTableBody.addEventListener('click', (e) => {
+                if (e.target.classList.contains('view-authenticator')) {
+                    const authId = parseInt(e.target.getAttribute('data-auth-id'));
+                    viewAuthenticator(authId);
+                }
+                
+                if (e.target.classList.contains('delete-authenticator')) {
+                    const authId = parseInt(e.target.getAttribute('data-auth-id'));
+                    showConfirmModal(
+                        `Are you sure you want to delete authenticator #${authId}?`,
+                        () => {
+                            authenticators = authenticators.filter(auth => auth.id !== authId);
+                            renderAuthenticatorsTable();
+                            closeConfirmModal();
+                            showToast('Authenticator deleted successfully', 'success');
+                        }
+                    );
+                }
+            });
+        }
+
+        // Generate QR code for TOTP (demo implementation)
+        function generateQrCode() {
+            const userId = authenticatorUser.value;
+            if (!userId) return;
+            
+            // In a real app, this would generate a proper QR code
+            // For demo, we'll just show a placeholder and generate a random secret
+            const user = users.find(u => u.id === parseInt(userId));
+            if (!user) return;
+            
+            const secret = generateTotpSecret();
+            totpSecretKey.textContent = secret;
+            
+            // Create a simple QR code placeholder (in a real app, use a QR code library)
+            qrCodePlaceholder.innerHTML = `
+                <div style="text-align: center; padding: 10px;">
+                    <div style="margin-bottom: 10px;">TOTP for ${user.name}</div>
+                    <div style="display: inline-block; background: #000; padding: 5px;">
+                        <div style="color: #fff; font-family: monospace; font-size: 10px; line-height: 10px; letter-spacing: 2px;">
+                            QR CODE PLACEHOLDER
+                        </div>
+                    </div>
+                    <div style="margin-top: 10px; font-size: 12px;">Scan with authenticator app</div>
+                </div>
+            `;
+        }
+
+        // User modal functions
+        function openUserModal(user = null) {
+            const modalTitle = document.getElementById('userModalTitle');
+            const form = document.getElementById('userForm');
+            
+            if (user) {
+                modalTitle.textContent = 'Edit User';
+                document.getElementById('userId').value = user.id;
+                document.getElementById('userName').value = user.name;
+                document.getElementById('userEmail').value = user.email;
+                document.getElementById('userPhone').value = user.phone;
+                document.getElementById('userCardSerial').value = user.cardSerial;
+                document.getElementById('userStatus').value = user.status;
+            } else {
+                modalTitle.textContent = 'Add New User';
+                form.reset();
+                document.getElementById('userId').value = '';
+            }
+            
+            userModal.style.display = 'flex';
+        }
+
+        function closeUserModal() {
+            userModal.style.display = 'none';
+        }
+
+        function editUser(userId) {
+            const user = users.find(u => u.id === userId);
+            if (user) openUserModal(user);
+        }
+
+        function saveUser() {
+            const userId = document.getElementById('userId').value;
+            const name = document.getElementById('userName').value.trim();
+            const email = document.getElementById('userEmail').value.trim();
+            const phone = document.getElementById('userPhone').value.trim();
+            const cardSerial = document.getElementById('userCardSerial').value.trim();
+            const status = document.getElementById('userStatus').value;
+            
+            // Basic validation
+            if (!name || !email || !status) {
+                showToast('Please fill in all required fields', 'error');
+                return;
+            }
+            
+            if (userId) {
+                // Edit existing user
+                const index = users.findIndex(u => u.id === parseInt(userId));
+                if (index !== -1) {
+                    users[index] = {
+                        ...users[index],
+                        name,
+                        email,
+                        phone,
+                        cardSerial,
+                        status
+                    };
+                    showToast('User updated successfully', 'success');
+                }
+            } else {
+                // Add new user
+                const newId = users.length > 0 ? Math.max(...users.map(u => u.id)) + 1 : 1;
+                users.push({
+                    id: newId,
+                    name,
+                    email,
+                    phone,
+                    cardSerial,
+                    status
+                });
+                showToast('User added successfully', 'success');
+            }
+            
+            renderUsersTable();
+            closeUserModal();
+            populateUserDropdown(); // Update authenticator user dropdown
+        }
+
+        // Admin modal functions
+        function openAdminModal(admin = null) {
+            const modalTitle = document.getElementById('adminModalTitle');
+            const form = document.getElementById('adminForm');
+            
+            if (admin) {
+                modalTitle.textContent = 'Edit Admin';
+                document.getElementById('adminId').value = admin.id;
+                document.getElementById('adminName').value = admin.name;
+                document.getElementById('adminEmail').value = admin.email;
+                document.getElementById('adminPhone').value = admin.phone;
+                document.getElementById('adminRole').value = admin.role;
+                document.getElementById('adminStatus').value = admin.status;
+            } else {
+                modalTitle.textContent = 'Add New Admin';
+                form.reset();
+                document.getElementById('adminId').value = '';
+            }
+            
+            adminModal.style.display = 'flex';
+        }
+
+        function closeAdminModal() {
+            adminModal.style.display = 'none';
+        }
+
+        function editAdmin(adminId) {
+            const admin = admins.find(a => a.id === adminId);
+            if (admin) openAdminModal(admin);
+        }
+
+        function saveAdmin() {
+            const adminId = document.getElementById('adminId').value;
+            const name = document.getElementById('adminName').value.trim();
+            const email = document.getElementById('adminEmail').value.trim();
+            const phone = document.getElementById('adminPhone').value.trim();
+            const role = document.getElementById('adminRole').value;
+            const status = document.getElementById('adminStatus').value;
+            
+            // Basic validation
+            if (!name || !email || !role || !status) {
+                showToast('Please fill in all required fields', 'error');
+                return;
+            }
+            
+            if (adminId) {
+                // Edit existing admin
+                const index = admins.findIndex(a => a.id === parseInt(adminId));
+                if (index !== -1) {
+                    admins[index] = {
+                        ...admins[index],
+                        name,
+                        email,
+                        phone,
+                        role,
+                        status
+                    };
+                    showToast('Admin updated successfully', 'success');
+                }
+            } else {
+                // Add new admin
+                const newId = admins.length > 0 ? Math.max(...admins.map(a => a.id)) + 1 : 1;
+                admins.push({
+                    id: newId,
+                    name,
+                    email,
+                    phone,
+                    role,
+                    status
+                });
+                showToast('Admin added successfully', 'success');
+            }
+            
+            renderAdminsTable();
+            closeAdminModal();
+        }
+
+        // Authenticator modal functions
+        function openAuthenticatorModal(authenticator = null) {
+            const modalTitle = document.getElementById('authenticatorModalTitle');
+            const form = document.getElementById('authenticatorForm');
+            
+            if (authenticator) {
+                modalTitle.textContent = 'Edit Authenticator';
+                document.getElementById('authenticatorId').value = authenticator.id;
+                document.getElementById('authenticatorUser').value = authenticator.userId;
+                document.getElementById('authenticatorType').value = authenticator.type;
+                document.getElementById('authenticatorStatus').value = authenticator.status;
+                
+                if (authenticator.type === 'totp') {
+                    totpSection.style.display = 'block';
+                    totpSecretKey.textContent = authenticator.secretKey;
+                    // Generate QR code placeholder
+                    generateQrCode();
+                } else {
+                    totpSection.style.display = 'none';
+                }
+            } else {
+                modalTitle.textContent = 'Assign New Authenticator';
+                form.reset();
+                document.getElementById('authenticatorId').value = '';
+                totpSection.style.display = 'none';
+            }
+            
+            authenticatorModal.style.display = 'flex';
+        }
+
+        function closeAuthenticatorModal() {
+            authenticatorModal.style.display = 'none';
+        }
+
+        function viewAuthenticator(authId) {
+            const auth = authenticators.find(a => a.id === authId);
+            if (!auth) return;
+            
+            document.getElementById('viewAuthenticatorModalTitle').textContent = `${auth.type.toUpperCase()} Authenticator`;
+            document.getElementById('viewAuthenticatorUser').textContent = `${auth.userName} (ID: ${auth.userId})`;
+            document.getElementById('viewAuthenticatorType').textContent = auth.type.toUpperCase();
+            document.getElementById('viewAuthenticatorStatus').innerHTML = `<span class="badge ${auth.status === 'active' ? 'badge-active' : 'badge-inactive'}">${auth.status}</span>`;
+            document.getElementById('viewAuthenticatorCreated').textContent = auth.createdAt;
+            document.getElementById('viewAuthenticatorLastUsed').textContent = auth.lastUsed;
+            
+            const viewTotpSection = document.getElementById('viewTotpSection');
+            const viewQrCodePlaceholder = document.getElementById('viewQrCodePlaceholder');
+            const viewTotpSecretKey = document.getElementById('viewTotpSecretKey');
+            
+            if (auth.type === 'totp') {
+                viewTotpSection.style.display = 'block';
+                viewTotpSecretKey.textContent = auth.secretKey;
+                
+                // Create QR code placeholder
+                viewQrCodePlaceholder.innerHTML = `
+                    <div style="text-align: center; padding: 10px;">
+                        <div style="margin-bottom: 10px;">TOTP for ${auth.userName}</div>
+                        <div style="display: inline-block; background: #000; padding: 5px;">
+                            <div style="color: #fff; font-family: monospace; font-size: 10px; line-height: 10px; letter-spacing: 2px;">
+                                QR CODE PLACEHOLDER
+                            </div>
+                        </div>
+                        <div style="margin-top: 10px; font-size: 12px;">Scan with authenticator app</div>
+                    </div>
+                `;
+            } else {
+                viewTotpSection.style.display = 'none';
+            }
+            
+            viewAuthenticatorModal.style.display = 'flex';
+        }
+
+        function closeViewAuthenticatorModal() {
+            viewAuthenticatorModal.style.display = 'none';
+        }
+
+        function saveAuthenticator() {
+            const authId = document.getElementById('authenticatorId').value;
+            const userId = document.getElementById('authenticatorUser').value;
+            const type = document.getElementById('authenticatorType').value;
+            const status = document.getElementById('authenticatorStatus').value;
+            
+            // Basic validation
+            if (!userId || !type || !status) {
+                showToast('Please fill in all required fields', 'error');
+                return;
+            }
+            
+            const user = users.find(u => u.id === parseInt(userId));
+            if (!user) {
+                showToast('Selected user not found', 'error');
+                return;
+            }
+            
+            if (authId) {
+                // Edit existing authenticator
+                const index = authenticators.findIndex(a => a.id === parseInt(authId));
+                if (index !== -1) {
+                    authenticators[index] = {
+                        ...authenticators[index],
+                        userId: parseInt(userId),
+                        userName: user.name,
+                        type,
+                        status
+                    };
+                    showToast('Authenticator updated successfully', 'success');
+                }
+            } else {
+                // Add new authenticator
+                const newId = authenticators.length > 0 ? Math.max(...authenticators.map(a => a.id)) + 1 : 1;
+                const newAuth = {
+                    id: newId,
+                    userId: parseInt(userId),
+                    userName: user.name,
+                    type,
+                    status,
+                    createdAt: new Date().toISOString().split('T')[0],
+                    lastUsed: 'Never',
+                    verified: false
+                };
+                
+                if (type === 'totp') {
+                    newAuth.secretKey = totpSecretKey.textContent;
+                } else if (type === 'sms') {
+                    newAuth.phone = user.phone;
+                } else if (type === 'email') {
+                    newAuth.email = user.email;
+                } else if (type === 'backup') {
+                    // Generate some backup codes
+                    const codes = [];
+                    for (let i = 0; i < 5; i++) {
+                        codes.push(Math.random().toString(36).substring(2, 8).toUpperCase());
+                    }
+                    newAuth.codes = codes;
+                }
+                
+                authenticators.push(newAuth);
+                showToast('Authenticator added successfully', 'success');
+            }
+            
+            renderAuthenticatorsTable();
+            closeAuthenticatorModal();
+        }
+
+        // Confirm modal functions
+        let confirmCallback = null;
+
+        function showConfirmModal(message, callback) {
+            document.getElementById('confirmModalMessage').textContent = message;
+            confirmCallback = callback;
+            confirmModal.style.display = 'flex';
+        }
+
+        function closeConfirmModal() {
+            confirmModal.style.display = 'none';
+            confirmCallback = null;
+        }
+
+        function confirmAction() {
+            if (confirmCallback) {
+                confirmCallback();
+            }
+            closeConfirmModal();
+        }
+    </script>
+</body>
+</html>
